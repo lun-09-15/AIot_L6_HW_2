@@ -20,19 +20,19 @@ jobs:
         with:
           python-version: "3.12"
           cache: pip
-          cache-dependency-path: hw2_flood_regression/requirements.txt
+          cache-dependency-path: requirements.txt
 
       - name: Install dependencies
-        run: python -m pip install -r hw2_flood_regression/requirements.txt
+        run: python -m pip install -r requirements.txt
 
       - name: Check Python syntax
-        run: python -m py_compile hw2_flood_regression/features.py hw2_flood_regression/train.py hw2_flood_regression/predict.py
+        run: python -m py_compile features.py train.py predict.py
 
       - name: Create CI dataset
-        run: python hw2_flood_regression/tests/create_smoke_data.py --output "$RUNNER_TEMP/flood_smoke.csv"
+        run: python tests/create_smoke_data.py --output "$RUNNER_TEMP/flood_smoke.csv"
 
       - name: Train and evaluate on CI data
-        run: python hw2_flood_regression/train.py --csv "$RUNNER_TEMP/flood_smoke.csv" --output "$RUNNER_TEMP/flood_outputs"
+        run: python train.py --csv "$RUNNER_TEMP/flood_smoke.csv" --output "$RUNNER_TEMP/flood_outputs"
 
       - name: Test saved-model prediction
-        run: python hw2_flood_regression/predict.py --input "$RUNNER_TEMP/flood_smoke.csv" --model "$RUNNER_TEMP/flood_outputs/flood_probability_pipeline.joblib" --output "$RUNNER_TEMP/predictions.csv"
+        run: python predict.py --input "$RUNNER_TEMP/flood_smoke.csv" --model "$RUNNER_TEMP/flood_outputs/flood_probability_pipeline.joblib" --output "$RUNNER_TEMP/predictions.csv"
