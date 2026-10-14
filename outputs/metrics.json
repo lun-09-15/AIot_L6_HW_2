@@ -1,0 +1,52 @@
+{
+  "source": "https://www.kaggle.com/competitions/playground-series-s4e5",
+  "sha256": "6c9adeacec0537306a80b957a69e57bf6d389e3c02c1ff33ca0a7dcb5a9b30fb",
+  "raw_rows": 1117957,
+  "source_feature_count": 20,
+  "selected_feature_count": 20,
+  "selected_features": [
+    "MonsoonIntensity",
+    "TopographyDrainage",
+    "RiverManagement",
+    "Deforestation",
+    "Urbanization",
+    "ClimateChange",
+    "DamsQuality",
+    "Siltation",
+    "AgriculturalPractices",
+    "Encroachments",
+    "IneffectiveDisasterPreparedness",
+    "DrainageSystems",
+    "CoastalVulnerability",
+    "Landslides",
+    "Watersheds",
+    "DeterioratingInfrastructure",
+    "PopulationScore",
+    "WetlandLoss",
+    "InadequatePlanning",
+    "PoliticalFactors"
+  ],
+  "training_rows": 894365,
+  "test_rows": 223592,
+  "selection_sample_rows": 100000,
+  "selection_cv_folds": 3,
+  "metrics": {
+    "train": {
+      "MAE": 0.015815270118558857,
+      "RMSE": 0.020095293549591105,
+      "R2": 0.8449678970612999
+    },
+    "test": {
+      "MAE": 0.01579247136376031,
+      "RMSE": 0.02008000465862889,
+      "R2": 0.8448773362840329
+    },
+    "baseline_test": {
+      "MAE": 0.04089184935658521,
+      "RMSE": 0.05098309336110274,
+      "R2": -2.0418489121709626e-10
+    }
+  },
+  "prediction_interval_coverage": 0.9461116676804179,
+  "prediction_interval_residual_df": 894344
+}

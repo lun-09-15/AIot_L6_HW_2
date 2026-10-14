@@ -1,0 +1,9 @@
+__pycache__/
+.venv/
+data/*.csv
+data/*.zip
+outputs/*.joblib
+outputs/test_predictions_and_intervals.csv
+outputs/kaggle_test_predictions.csv
+outputs/train.log
+outputs/train.err.log
