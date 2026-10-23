@@ -2,8 +2,10 @@
 
 Kaggle source: [Regression with a Flood Prediction Dataset](https://www.kaggle.com/competitions/playground-series-s4e5). The data has **20 numeric source features** and continuous target `FloodProbability`.
 
-The large Kaggle files are deliberately excluded from Git. Download `train.csv` and
-`test.csv` from Kaggle, then place them in `data/` before training locally.
+The complete source data is included as
+`data/flood_prediction_dataset.zip` (containing `train.csv` and `test.csv`).
+Extract it into `data/` before running the command-line analysis. Individual CSV
+files remain excluded from Git so the repository stores one compact source archive.
 
 ## Streamlit web deployment
 

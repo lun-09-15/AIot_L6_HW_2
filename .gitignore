@@ -2,6 +2,7 @@ __pycache__/
 .venv/
 data/*.csv
 data/*.zip
+!data/flood_prediction_dataset.zip
 outputs/*.joblib
 outputs/test_predictions_and_intervals.csv
 outputs/kaggle_test_predictions.csv

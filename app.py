@@ -4,6 +4,7 @@ from __future__ import annotations
 
 from io import BytesIO
 from typing import Tuple
+from zipfile import ZipFile
 
 import matplotlib.pyplot as plt
 import numpy as np
@@ -33,7 +34,15 @@ def read_csv_url(url: str) -> pd.DataFrame:
 
 
 def read_uploaded_csv(uploaded_file) -> pd.DataFrame:
-    return pd.read_csv(BytesIO(uploaded_file.getvalue()))
+    content = BytesIO(uploaded_file.getvalue())
+    if uploaded_file.name.lower().endswith(".zip"):
+        with ZipFile(content) as archive:
+            train_files = [name for name in archive.namelist() if name.lower().endswith("train.csv")]
+            if not train_files:
+                raise ValueError("ZIP 中找不到 train.csv。")
+            with archive.open(train_files[0]) as train_file:
+                return pd.read_csv(train_file)
+    return pd.read_csv(content)
 
 
 def make_preprocessor(features: pd.DataFrame) -> ColumnTransformer:
@@ -193,7 +202,7 @@ if source.startswith("Flood"):
         "請上傳 Kaggle Flood Prediction Dataset 的 train.csv。此資料集有 20 個數值特徵，"
         "目標欄位為 FloodProbability。"
     )
-    uploaded = st.file_uploader("上傳 Flood train.csv", type="csv", key="flood")
+    uploaded = st.file_uploader("上傳 Flood train.csv 或資料集 ZIP", type=["csv", "zip"], key="flood")
     if uploaded:
         data, default_target = read_uploaded_csv(uploaded), FLOOD_TARGET
 elif source.startswith("50 Startups"):
