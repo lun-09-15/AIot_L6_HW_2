@@ -5,11 +5,12 @@ Kaggle source: [Regression with a Flood Prediction Dataset](https://www.kaggle.c
 The large Kaggle files are deliberately excluded from Git. Download `train.csv` and
 `test.csv` from Kaggle, then place them in `data/` before training locally.
 
-## Web deployment
+## Streamlit web deployment
 
-The main submission is a GitHub repository and web app. The Streamlit app has a
-dropdown for two regression problems and meets the bonus requirement for loading
-an arbitrary CSV URL or uploaded CSV file:
+The main submission is a GitHub repository and Streamlit web app. `app.py` uses
+the same Python scientific-computing environment as the command-line analysis.
+It has a dropdown for two regression problems and meets the bonus requirement for
+loading an arbitrary CSV URL or uploaded CSV file:
 
 - **Flood Probability**: upload Kaggle `train.csv`; it has 20 source features.
 - **50 Startups**: a ready-to-run second regression problem.
@@ -23,7 +24,9 @@ streamlit run app.py
 ```
 
 To deploy with Streamlit Community Cloud, create a new app from this GitHub
-repository, select branch `main`, and set the main file path to `app.py`.
+repository, select branch `main`, and set the main file path to `app.py`. The
+deployed app runs the sklearn preprocessing, feature selection, linear regression,
+model evaluation, and prediction-interval calculations directly in Python.
 
 ## Command-line analysis
 
