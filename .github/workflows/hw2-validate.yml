@@ -1,4 +1,4 @@
-name: Validate Flood Regression HW2
+name: Validate HW2 Regression App
 
 on:
   push:
@@ -28,7 +28,7 @@ jobs:
       - name: Check Python syntax
         run: python -m py_compile features.py train.py predict.py app.py
 
-      - name: Test dashboard analysis and input validation
+      - name: Test dashboard and packaged datasets
         run: python -m unittest discover -s tests -p "test_*.py"
 
       - name: Create CI dataset
@@ -39,3 +39,6 @@ jobs:
 
       - name: Test saved-model prediction
         run: python predict.py --input "$RUNNER_TEMP/flood_smoke.csv" --model "$RUNNER_TEMP/flood_outputs/flood_probability_pipeline.joblib" --output "$RUNNER_TEMP/predictions.csv"
+
+      - name: Verify model metrics and prediction CSV
+        run: python tests/check_smoke_outputs.py --outputs "$RUNNER_TEMP/flood_outputs" --predictions "$RUNNER_TEMP/predictions.csv"

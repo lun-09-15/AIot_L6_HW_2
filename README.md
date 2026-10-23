@@ -1,4 +1,20 @@
-# HW2 — Multiple Linear Regression Web App
+# HW2｜多元線性回歸分析網站
+
+[![Validate HW2](https://github.com/lun-09-15/AIot_L6_HW_2/actions/workflows/hw2-validate.yml/badge.svg)](https://github.com/lun-09-15/AIot_L6_HW_2/actions/workflows/hw2-validate.yml)
+
+**線上網站：** [Multiple Linear Regression Lab](https://lun-09-15-aiotl6hw2.streamlit.app/)
+
+本專案依 CRISP-DM 流程，以 Kaggle 洪水資料為主要題目，使用 `sklearn.LinearRegression` 預測連續目標 `FloodProbability`。網站可切換三個回歸題目，也支援自訂 CSV 網址與上傳；提供資料探索、特徵選擇、模型評估、95% **預測區間**、異常值分析及單筆預測。Flood 資料有 **20 個原始輸入特徵**，符合本次作業「超過 13 個特徵」的要求。
+
+## 網站畫面
+
+![Flood 資料已載入，顯示資料來源、筆數、欄位數及可分頁的資料預覽](docs/images/dashboard-overview.png)
+
+首頁會自動載入 GitHub 中的 Flood 資料 ZIP，顯示 Kaggle 來源、1,117,957 筆資料、22 欄與資料品質摘要。下方表格每頁顯示 5,000 筆，可捲動及切換頁碼。
+
+![模型評估中的實際值與預測值，以及 95% 預測區間](docs/images/dashboard-prediction.png)
+
+「預測表現」分頁左側比較實際值與預測值，右側畫出預測值及 95% 預測區間；頁面上方另提供 MAE、RMSE、R² 和區間涵蓋率。右圖只顯示依預測值排序後的前 200 筆，不能用它估計整體涵蓋率。
 
 Kaggle source: [Regression with a Flood Prediction Dataset](https://www.kaggle.com/competitions/playground-series-s4e5). The data has **20 numeric source features** and continuous target `FloodProbability`.
 
@@ -11,6 +27,8 @@ The source data is included as `data/flood_prediction_dataset.zip` (containing
 `train.csv` and `test.csv`), `data/life_expectancy_who.zip`, and
 `data/student_performance.zip`. Extract the Flood archive into `data/` before
 running the command-line analysis. Individual CSV files remain excluded from Git.
+The Kaggle `test.csv` has no `FloodProbability` labels, so holdout evaluation
+uses a split of the labeled `train.csv`, not the Kaggle test file.
 
 ## Streamlit web deployment
 
@@ -30,11 +48,11 @@ Custom CSV inputs are limited to 50 MB. The app checks for empty data, missing
 numeric targets, too few usable rows, and excessive categorical expansion, and
 shows an explanation when a dataset cannot be modeled.
 
-Run locally:
+Run locally with Python 3.12:
 
 ```powershell
 python -m pip install -r requirements.txt
-streamlit run app.py
+python -m streamlit run app.py
 ```
 
 To deploy with Streamlit Community Cloud, create a new app from this GitHub
@@ -62,6 +80,7 @@ the hosted app keeps readable tables and controls across browser theme settings.
 ## Command-line analysis
 
 ```powershell
+Expand-Archive -LiteralPath data/flood_prediction_dataset.zip -DestinationPath data -Force
 python train.py
 python predict.py --input data/test.csv
 ```
@@ -74,4 +93,6 @@ Generated files are in `outputs/`: `report.md`, `feature_selection.png`, `evalua
 
 The repository workflow runs syntax checks plus a complete train-and-predict smoke
 test with generated data whenever code is pushed or submitted in a pull request.
-It does not upload or download the large Kaggle CSV files.
+It also validates that the three included data ZIPs contain the expected CSV
+files and target columns. It does not train on the full Kaggle dataset in CI;
+the checked-in `outputs/` results come from the full local experiment.
