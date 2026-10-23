@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 from io import BytesIO
+from hashlib import sha256
 from typing import Tuple
 from urllib.request import urlopen
 from zipfile import ZipFile
@@ -213,18 +214,11 @@ with st.sidebar:
 data = None
 default_target = None
 if source.startswith("Flood"):
-    st.info(
-        "將自動從本 GitHub repository 下載完整 Flood 資料集 ZIP 並讀取 train.csv。"
-        "此資料集有 20 個數值特徵，目標欄位為 FloodProbability。"
-    )
-    uploaded = st.file_uploader("改用自己的 Flood CSV／ZIP（可選）", type=["csv", "zip"], key="flood")
     try:
-        if uploaded:
-            data = read_uploaded_csv(uploaded)
-        else:
-            with st.spinner("正在從 GitHub 載入 Flood 資料集…"):
-                data = read_flood_from_github()
+        with st.spinner("正在從 GitHub 載入 Flood 資料集…"):
+            data = read_flood_from_github()
         default_target = FLOOD_TARGET
+        st.success("已載入 Flood Probability 資料集。")
     except Exception as exc:
         st.error(f"無法從 GitHub 載入 Flood 資料集：{exc}")
 elif source.startswith("50 Startups"):
@@ -252,7 +246,12 @@ if data is None:
 st.subheader("Data Understanding")
 left, right = st.columns([2, 1])
 with left:
-    st.dataframe(data.head(10), use_container_width=True)
+    page_size = 5_000
+    page_count = (len(data) + page_size - 1) // page_size
+    page = st.number_input("資料頁碼（可瀏覽全部資料）", min_value=1, max_value=page_count, value=1)
+    first_row = (page - 1) * page_size
+    st.caption(f"顯示第 {first_row + 1:,}–{min(first_row + page_size, len(data)):,} 筆，共 {len(data):,} 筆；表格內可捲動。")
+    st.dataframe(data.iloc[first_row:first_row + page_size], height=400, use_container_width=True)
 with right:
     st.metric("Rows", f"{len(data):,}")
     st.metric("Columns", len(data.columns))
@@ -273,13 +272,21 @@ with control_2:
 with control_3:
     test_percentage = st.slider("測試集比例", 0.1, 0.4, 0.2, 0.05)
 
-if st.button("訓練 Multiple Linear Regression", type="primary"):
+dataset_key = source
+if source == "自訂 CSV 網址":
+    dataset_key = (source, url)
+elif source == "上傳 CSV 檔案" and uploaded:
+    dataset_key = (source, sha256(uploaded.getvalue()).hexdigest())
+analysis_key = (dataset_key, target, requested_k, test_percentage)
+if st.session_state.get("analysis_key") != analysis_key:
     try:
         with st.spinner("正在進行資料前處理、特徵選擇與模型評估…"):
+            model_data = data.sample(n=100_000, random_state=42) if len(data) > 100_000 else data
             summary, result, scatter_figure, interval_figure = run_regression(
-                data, target, requested_k, test_percentage
+                model_data, target, requested_k, test_percentage
             )
         st.session_state["analysis"] = (summary, result, scatter_figure, interval_figure, target)
+        st.session_state["analysis_key"] = analysis_key
     except Exception as exc:
         st.error(f"無法完成分析：{exc}")
 
@@ -296,6 +303,8 @@ if "analysis" in st.session_state:
         f"使用 {summary['rows']:,} 筆資料、{summary['raw_features']} 個原始特徵；"
         f"類別編碼後共有 {summary['encoded_features']} 個欄位，SelectKBest 選出 {len(summary['selected_features'])} 個。"
     )
+    if len(data) > 100_000:
+        st.caption("網頁模型使用固定亂數種子的 100,000 筆樣本，以便調整設定時快速更新；資料預覽仍可瀏覽全部資料。")
     st.expander("Selected features").write(summary["selected_features"])
     chart_1, chart_2 = st.columns(2)
     chart_1.pyplot(scatter_figure, clear_figure=False)

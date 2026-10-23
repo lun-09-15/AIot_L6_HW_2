@@ -29,6 +29,10 @@ To deploy with Streamlit Community Cloud, create a new app from this GitHub
 repository, select branch `main`, and set the main file path to `app.py`. The
 deployed app runs the sklearn preprocessing, feature selection, linear regression,
 model evaluation, and prediction-interval calculations directly in Python.
+The data table shows 5,000 scrollable rows per page, so all records can be
+inspected without sending over a million rows to the browser at once. The web
+model uses a reproducible 100,000-row sample for large datasets and updates
+automatically when the target, feature count, or test split changes.
 
 ## Command-line analysis
 
