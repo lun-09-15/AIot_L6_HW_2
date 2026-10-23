@@ -3,6 +3,8 @@ __pycache__/
 data/*.csv
 data/*.zip
 !data/flood_prediction_dataset.zip
+!data/life_expectancy_who.zip
+!data/student_performance.zip
 outputs/*.joblib
 outputs/test_predictions_and_intervals.csv
 outputs/kaggle_test_predictions.csv

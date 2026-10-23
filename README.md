@@ -2,20 +2,26 @@
 
 Kaggle source: [Regression with a Flood Prediction Dataset](https://www.kaggle.com/competitions/playground-series-s4e5). The data has **20 numeric source features** and continuous target `FloodProbability`.
 
-The complete source data is included as
-`data/flood_prediction_dataset.zip` (containing `train.csv` and `test.csv`).
-Extract it into `data/` before running the command-line analysis. Individual CSV
-files remain excluded from Git so the repository stores one compact source archive.
+Additional Kaggle sources:
+
+- [Life Expectancy (WHO)](https://www.kaggle.com/datasets/kumarajarshi/life-expectancy-who): 21 original predictors, target `Life expectancy`.
+- [Student Performance Data Set](https://www.kaggle.com/datasets/larsen0966/student-performance-data-set): 32 original predictors in `student-por.csv`, target `G3`.
+
+The source data is included as `data/flood_prediction_dataset.zip` (containing
+`train.csv` and `test.csv`), `data/life_expectancy_who.zip`, and
+`data/student_performance.zip`. Extract the Flood archive into `data/` before
+running the command-line analysis. Individual CSV files remain excluded from Git.
 
 ## Streamlit web deployment
 
 The main submission is a GitHub repository and Streamlit web app. `app.py` uses
 the same Python scientific-computing environment as the command-line analysis.
-It has a dropdown for two regression problems and meets the bonus requirement for
+It has a dropdown for three regression problems and meets the bonus requirement for
 loading an arbitrary CSV URL or uploaded CSV file:
 
 - **Flood Probability**: automatically downloads the repository's complete source-data ZIP; it has 20 source features.
-- **50 Startups**: a ready-to-run second regression problem.
+- **Life Expectancy (WHO)**: automatically loads 21 source features.
+- **Student Performance**: automatically loads 32 source features.
 - **Custom CSV URL / upload**: choose any numeric target column in the interface.
 
 Run locally:

@@ -23,15 +23,13 @@ from sklearn.pipeline import Pipeline
 from sklearn.preprocessing import OneHotEncoder
 
 
-STARTUPS_URL = (
-    "https://raw.githubusercontent.com/Avik-Jain/100-Days-Of-ML-Code/"
-    "master/datasets/50_Startups.csv"
-)
 FLOOD_TARGET = "FloodProbability"
-FLOOD_ARCHIVE_URL = (
-    "https://raw.githubusercontent.com/lun-09-15/AIot_L6_HW_2/"
-    "main/data/flood_prediction_dataset.zip"
-)
+DATA_BASE_URL = "https://raw.githubusercontent.com/lun-09-15/AIot_L6_HW_2/main/data/"
+DATASETS = {
+    "Flood Probability（Kaggle，20 特徵）": ("flood_prediction_dataset.zip", "train.csv", FLOOD_TARGET),
+    "Life Expectancy（WHO，21 特徵）": ("life_expectancy_who.zip", "Life Expectancy Data.csv", "Life expectancy"),
+    "Student Performance（葡萄牙語，32 特徵）": ("student_performance.zip", "student-por.csv", "G3"),
+}
 
 
 @st.cache_data(show_spinner=False)
@@ -56,9 +54,14 @@ def read_uploaded_csv(uploaded_file) -> pd.DataFrame:
 
 
 @st.cache_data(show_spinner=False)
-def read_flood_from_github() -> pd.DataFrame:
-    with urlopen(FLOOD_ARCHIVE_URL, timeout=90) as response:
-        return read_train_from_zip(response.read())
+def read_dataset_from_github(archive_name: str, csv_name: str) -> pd.DataFrame:
+    with urlopen(DATA_BASE_URL + archive_name, timeout=90) as response:
+        content = response.read()
+    with ZipFile(BytesIO(content)) as archive:
+        with archive.open(csv_name) as csv_file:
+            frame = pd.read_csv(csv_file)
+    frame.columns = frame.columns.str.strip()
+    return frame
 
 
 def make_preprocessor(features: pd.DataFrame) -> ColumnTransformer:
@@ -203,30 +206,19 @@ with st.sidebar:
     st.header("Dataset")
     source = st.selectbox(
         "選擇問題／資料來源",
-        [
-            "Flood Probability（Kaggle，20 特徵）",
-            "50 Startups（範例）",
-            "自訂 CSV 網址",
-            "上傳 CSV 檔案",
-        ],
+        [*DATASETS, "自訂 CSV 網址", "上傳 CSV 檔案"],
     )
 
 data = None
 default_target = None
-if source.startswith("Flood"):
+if source in DATASETS:
     try:
-        with st.spinner("正在從 GitHub 載入 Flood 資料集…"):
-            data = read_flood_from_github()
-        default_target = FLOOD_TARGET
-        st.success("已載入 Flood Probability 資料集。")
+        archive_name, csv_name, default_target = DATASETS[source]
+        with st.spinner("正在從 GitHub 載入資料集…"):
+            data = read_dataset_from_github(archive_name, csv_name)
+        st.success(f"已載入 {source.split('（')[0]} 資料集。")
     except Exception as exc:
-        st.error(f"無法從 GitHub 載入 Flood 資料集：{exc}")
-elif source.startswith("50 Startups"):
-    try:
-        data, default_target = read_csv_url(STARTUPS_URL), "Profit"
-        st.success("已載入 50 Startups 範例資料集。")
-    except Exception as exc:
-        st.error(f"無法讀取範例資料集：{exc}")
+        st.error(f"無法從 GitHub 載入資料集：{exc}")
 elif source == "自訂 CSV 網址":
     url = st.text_input("CSV 直接網址", placeholder="https://example.com/data.csv")
     if url:
