@@ -14,6 +14,8 @@ running the command-line analysis. Individual CSV files remain excluded from Git
 
 ## Streamlit web deployment
 
+Live app: [AIoT HW2 regression dashboard](https://lun-09-15-aiotl6hw2.streamlit.app/).
+
 The main submission is a GitHub repository and Streamlit web app. `app.py` uses
 the same Python scientific-computing environment as the command-line analysis.
 It has a dropdown for three regression problems and meets the bonus requirement for
