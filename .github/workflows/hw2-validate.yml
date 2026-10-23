@@ -28,6 +28,9 @@ jobs:
       - name: Check Python syntax
         run: python -m py_compile features.py train.py predict.py app.py
 
+      - name: Test dashboard analysis and input validation
+        run: python -m unittest discover -s tests -p "test_*.py"
+
       - name: Create CI dataset
         run: python tests/create_smoke_data.py --output "$RUNNER_TEMP/flood_smoke.csv"
 

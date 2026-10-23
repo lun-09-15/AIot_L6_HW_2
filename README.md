@@ -24,6 +24,10 @@ loading an arbitrary CSV URL or uploaded CSV file:
 - **Student Performance**: automatically loads 32 source features.
 - **Custom CSV URL / upload**: choose any numeric target column in the interface.
 
+Custom CSV inputs are limited to 50 MB. The app checks for empty data, missing
+numeric targets, too few usable rows, and excessive categorical expansion, and
+shows an explanation when a dataset cannot be modeled.
+
 Run locally:
 
 ```powershell
@@ -39,6 +43,19 @@ The data table shows 5,000 scrollable rows per page, so all records can be
 inspected without sending over a million rows to the browser at once. The web
 model uses a reproducible 100,000-row sample for large datasets and updates
 automatically when the target, feature count, or test split changes.
+The dashboard also shows target distribution, missing-value and correlation
+charts, column quality, feature selection scores, standardized coefficients,
+residual diagnostics, and the top 10 largest prediction errors. Large charts
+use bounded samples while their data-table pagination covers all rows.
+It compares the best single-feature model with the selected multiple-feature
+model on the same holdout set. A separate 3-fold training-only cross-validation
+curve compares 1–40 encoded feature counts (using up to 3,000 training rows),
+without using the holdout test set to recommend a feature count. The deployment
+section accepts one editable observation and immediately shows its prediction
+and 95% prediction interval; unfamiliar categories and out-of-range numeric
+values produce a caution message.
+The checked-in `.streamlit/config.toml` fixes a light, high-contrast theme so
+the hosted app keeps readable tables and controls across browser theme settings.
 
 ## Command-line analysis
 
