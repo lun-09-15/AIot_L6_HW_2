@@ -1,12 +1,33 @@
-# HW2 — FloodProbability Multiple Linear Regression
+# HW2 — Multiple Linear Regression Web App
 
 Kaggle source: [Regression with a Flood Prediction Dataset](https://www.kaggle.com/competitions/playground-series-s4e5). The data has **20 numeric source features** and continuous target `FloodProbability`.
 
 The large Kaggle files are deliberately excluded from Git. Download `train.csv` and
 `test.csv` from Kaggle, then place them in `data/` before training locally.
 
+## Web deployment
+
+The main submission is a GitHub repository and web app. The Streamlit app has a
+dropdown for two regression problems and meets the bonus requirement for loading
+an arbitrary CSV URL or uploaded CSV file:
+
+- **Flood Probability**: upload Kaggle `train.csv`; it has 20 source features.
+- **50 Startups**: a ready-to-run second regression problem.
+- **Custom CSV URL / upload**: choose any numeric target column in the interface.
+
+Run locally:
+
 ```powershell
 python -m pip install -r requirements.txt
+streamlit run app.py
+```
+
+To deploy with Streamlit Community Cloud, create a new app from this GitHub
+repository, select branch `main`, and set the main file path to `app.py`.
+
+## Command-line analysis
+
+```powershell
 python train.py
 python predict.py --input data/test.csv
 ```

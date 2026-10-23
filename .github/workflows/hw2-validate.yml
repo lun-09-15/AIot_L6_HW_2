@@ -26,7 +26,7 @@ jobs:
         run: python -m pip install -r requirements.txt
 
       - name: Check Python syntax
-        run: python -m py_compile features.py train.py predict.py
+        run: python -m py_compile features.py train.py predict.py app.py
 
       - name: Create CI dataset
         run: python tests/create_smoke_data.py --output "$RUNNER_TEMP/flood_smoke.csv"
