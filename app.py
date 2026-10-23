@@ -4,6 +4,7 @@ from __future__ import annotations
 
 from io import BytesIO
 from typing import Tuple
+from urllib.request import urlopen
 from zipfile import ZipFile
 
 import matplotlib.pyplot as plt
@@ -26,6 +27,10 @@ STARTUPS_URL = (
     "master/datasets/50_Startups.csv"
 )
 FLOOD_TARGET = "FloodProbability"
+FLOOD_ARCHIVE_URL = (
+    "https://raw.githubusercontent.com/lun-09-15/AIot_L6_HW_2/"
+    "main/data/flood_prediction_dataset.zip"
+)
 
 
 @st.cache_data(show_spinner=False)
@@ -33,16 +38,26 @@ def read_csv_url(url: str) -> pd.DataFrame:
     return pd.read_csv(url)
 
 
+def read_train_from_zip(content: bytes) -> pd.DataFrame:
+    with ZipFile(BytesIO(content)) as archive:
+        train_files = [name for name in archive.namelist() if name.lower().endswith("train.csv")]
+        if not train_files:
+            raise ValueError("ZIP 中找不到 train.csv。")
+        with archive.open(train_files[0]) as train_file:
+            return pd.read_csv(train_file)
+
+
 def read_uploaded_csv(uploaded_file) -> pd.DataFrame:
-    content = BytesIO(uploaded_file.getvalue())
+    content = uploaded_file.getvalue()
     if uploaded_file.name.lower().endswith(".zip"):
-        with ZipFile(content) as archive:
-            train_files = [name for name in archive.namelist() if name.lower().endswith("train.csv")]
-            if not train_files:
-                raise ValueError("ZIP 中找不到 train.csv。")
-            with archive.open(train_files[0]) as train_file:
-                return pd.read_csv(train_file)
-    return pd.read_csv(content)
+        return read_train_from_zip(content)
+    return pd.read_csv(BytesIO(content))
+
+
+@st.cache_data(show_spinner=False)
+def read_flood_from_github() -> pd.DataFrame:
+    with urlopen(FLOOD_ARCHIVE_URL, timeout=90) as response:
+        return read_train_from_zip(response.read())
 
 
 def make_preprocessor(features: pd.DataFrame) -> ColumnTransformer:
@@ -199,12 +214,19 @@ data = None
 default_target = None
 if source.startswith("Flood"):
     st.info(
-        "請上傳 Kaggle Flood Prediction Dataset 的 train.csv。此資料集有 20 個數值特徵，"
-        "目標欄位為 FloodProbability。"
+        "將自動從本 GitHub repository 下載完整 Flood 資料集 ZIP 並讀取 train.csv。"
+        "此資料集有 20 個數值特徵，目標欄位為 FloodProbability。"
     )
-    uploaded = st.file_uploader("上傳 Flood train.csv 或資料集 ZIP", type=["csv", "zip"], key="flood")
-    if uploaded:
-        data, default_target = read_uploaded_csv(uploaded), FLOOD_TARGET
+    uploaded = st.file_uploader("改用自己的 Flood CSV／ZIP（可選）", type=["csv", "zip"], key="flood")
+    try:
+        if uploaded:
+            data = read_uploaded_csv(uploaded)
+        else:
+            with st.spinner("正在從 GitHub 載入 Flood 資料集…"):
+                data = read_flood_from_github()
+        default_target = FLOOD_TARGET
+    except Exception as exc:
+        st.error(f"無法從 GitHub 載入 Flood 資料集：{exc}")
 elif source.startswith("50 Startups"):
     try:
         data, default_target = read_csv_url(STARTUPS_URL), "Profit"

@@ -14,7 +14,7 @@ the same Python scientific-computing environment as the command-line analysis.
 It has a dropdown for two regression problems and meets the bonus requirement for
 loading an arbitrary CSV URL or uploaded CSV file:
 
-- **Flood Probability**: upload Kaggle `train.csv`; it has 20 source features.
+- **Flood Probability**: automatically downloads the repository's complete source-data ZIP; it has 20 source features.
 - **50 Startups**: a ready-to-run second regression problem.
 - **Custom CSV URL / upload**: choose any numeric target column in the interface.
 
